@@ -4,7 +4,7 @@ networks:
     external:
       name: nginx_shared
 services:
-  random-game-api:
+  random-game-front-end:
     image: ryuyanninja/random-game-front-end:latest
     restart: always
     container_name: random-game-front-end

@@ -1,8 +1,9 @@
 <template>
   <div>
     <div id="container" v-cloak :class="{ loading }" :style="bgStyle" @click="goToNewUrl">
-      <img ref="gameBackgroundImage" v-if="gameId" :src="gameBackgroundImage" />
-      <img ref="gameImage" v-if="gameId" :src="gameImage" />
+      <img ref="gameBackgroundImage" v-if="game.id" :src="gameBackgroundImage" />
+      <img ref="gameImage" v-if="game.id" :src="gameImage" />
+      <span>{{ game.name }}</span>
     </div>
     <div id="loader" :class="{ hidden: !loading && !switching }">
       <square-loader :loading="loading || switching" color="rgba( 62, 126, 167, 0.8)"></square-loader>
@@ -20,19 +21,22 @@ export default {
   },
   data() {
     return {
-      gameId: null,
       loading: true,
       switching: false,
-      noLargeImage: false
+      noLargeImage: false,
+      game: {
+        id: null,
+        name: null
+      }
     }
   },
   computed: {
     gameBackgroundImage() {
-      return `https://steamcdn-a.akamaihd.net/steam/apps/${this.gameId}/page_bg_generated.jpg`
+      return `https://steamcdn-a.akamaihd.net/steam/apps/${this.game.id}/page_bg_generated.jpg`
     },
     gameImage() {
       const imageName = this.noLargeImage ? 'header' : 'capsule_616x353'
-      return `https://steamcdn-a.akamaihd.net/steam/apps/${this.gameId}/${imageName}.jpg`
+      return `https://steamcdn-a.akamaihd.net/steam/apps/${this.game.id}/${imageName}.jpg`
     },
     bgStyle() {
       if (this.loading)
@@ -49,7 +53,8 @@ export default {
       if (url.endsWith('/'))
         url = url.slice(0, -1)
 
-      this.gameId = url.split('/').reverse()[0]
+      this.game.id = url.split('/').reverse()[0]
+      this.game.name = window.localStorage['gameName' + this.game.id]
     }
   },
   mounted() {
@@ -83,12 +88,14 @@ export default {
     })
   },
   methods: {
-    async getGameId() {
-      return (await axios.get(`${process.env.API_URL}/get-random-unplayed-game`)).data.gameId
+    async getGame() {
+      return (await axios.get(`${process.env.API_URL}/get-random-unplayed-game`)).data
     },
     async goToNewUrl() {
       this.switching = true
-      window.location.href = `/random-game/${await this.getGameId()}`
+      const game = await this.getGame()
+      window.localStorage['gameName' + game.id] = game.name
+      window.location.href = `/random-game/${game.id}`
     }
   }
 }
@@ -107,6 +114,7 @@ body {
   #container,
   #loader {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     opacity: 1;
@@ -118,14 +126,33 @@ body {
     height: 100vh;
     font-family: "Motiva Sans", Sans-serif;
     font-weight: 300;
-    font-size: 5vw;
+    font-size: 18px;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
+    color: #fff;
     cursor: pointer;
 
     img {
       box-shadow: 5px 5px 14px 7px rgba(0, 0, 0, 0.7);
+      position: relative;
+      top: 10px;
+      z-index: 1;
+      transition: top 500ms ease;
+
+      &:hover {
+        top: 0;
+
+        & + span {
+          top: 10px;
+        }
+      }
+    }
+
+    span {
+      position: relative;
+      top: -10px;
+      transition: top 500ms ease;
     }
   }
 
