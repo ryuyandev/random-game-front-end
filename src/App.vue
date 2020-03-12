@@ -71,7 +71,7 @@ export default {
     if (list == 'unplayed' || list == 'played')
       this.list = list
 
-    if (new RegExp(/random-game\/?$/).test(window.location.href))
+    if (new RegExp(/random-game\/?$/).test(window.location.pathname))
       await this.goToNewUrl(true)
     else {
       let url = window.location.pathname
