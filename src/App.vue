@@ -21,7 +21,7 @@
         <button class="material-icons" @click="next">keyboard_arrow_right</button>
     </div>
     <div id="loader" :class="{ hidden: !loading && !switching }">
-      <square-loader :loading="loading || switching" color="rgba( 62, 126, 167, 0.8)"></square-loader>
+      <square-loader :loading="loading || switching" color="rgba(62, 126, 167, 0.8)"></square-loader>
     </div>
   </div>
 </template>
@@ -177,6 +177,7 @@ body {
       font-size: 140px;
       background: transparent;
       color: rgba( 62, 126, 167, 0.8);
+      text-shadow: 2px 0 7px #000;
       cursor: pointer;
       transition: all 250ms ease;
       position: relative;
