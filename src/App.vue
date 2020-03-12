@@ -1,9 +1,24 @@
 <template>
   <div>
-    <div id="container" v-cloak :class="{ loading }" :style="bgStyle" @click="goToNewUrl">
-      <img ref="gameBackgroundImage" v-if="game.id" :src="gameBackgroundImage" />
-      <img ref="gameImage" v-if="game.id" :src="gameImage" />
-      <span>{{ game.name }}</span>
+    <div
+      id="container"
+      v-cloak
+      v-if="game.id"
+      :class="{ loading }"
+      :style="bgStyle">
+        <img ref="gameBackgroundImage" :src="gameBackgroundImage" />
+        <button
+          class="material-icons"
+          :class="{ hidden: noPrevious }"
+          @click="previous">
+            keyboard_arrow_left
+        </button>
+        <div>
+          <a :href="`steam://run/${game.id}`">
+            <img ref="gameImage" :src="gameImage" :title="game.name" />
+          </a>
+        </div>
+        <button class="material-icons" @click="next">keyboard_arrow_right</button>
     </div>
     <div id="loader" :class="{ hidden: !loading && !switching }">
       <square-loader :loading="loading || switching" color="rgba( 62, 126, 167, 0.8)"></square-loader>
@@ -24,6 +39,7 @@ export default {
       loading: true,
       switching: false,
       noLargeImage: false,
+      list: 'all',
       game: {
         id: null,
         name: null
@@ -43,11 +59,20 @@ export default {
         return {}
       else
         return { backgroundImage: `url(${this.gameBackgroundImage})` }
+    },
+    noPrevious() {
+      return this.game.id == window.localStorage.startingId
     }
   },
   async created() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const list = urlParams.get('list')
+
+    if (list == 'unplayed' || list == 'played')
+      this.list = list
+
     if (new RegExp(/random-game\/?$/).test(window.location.href))
-      await this.goToNewUrl()
+      await this.goToNewUrl(true)
     else {
       let url = window.location.pathname
       if (url.endsWith('/'))
@@ -88,14 +113,26 @@ export default {
     })
   },
   methods: {
-    async getGame() {
-      return (await axios.get(`${process.env.API_URL}/get-random-unplayed-game`)).data
+    async getGame(list) {
+      return (await axios.get(`${process.env.API_URL}/${list}`)).data
     },
-    async goToNewUrl() {
+    async goToNewUrl(start) {
       this.switching = true
-      const game = await this.getGame()
+
+      const game = await this.getGame(this.list)
+
+      if (start)
+        window.localStorage.startingId = game.id
+
       window.localStorage['gameName' + game.id] = game.name
-      window.location.href = `/random-game/${game.id}`
+      window.location.href = `/random-game/${game.id}${window.location.search}`
+    },
+    previous() {
+      window.history.back()
+    },
+    async next() {
+      if (!window.history.forward())
+        await this.goToNewUrl()
     }
   }
 }
@@ -103,7 +140,9 @@ export default {
 
 <style lang="scss">
 body {
-  background: #000;
+  background: url('./assets/img/default-bg.png') center top no-repeat #1b2838;
+  overflow: hidden;
+  user-select: none;
 
   [v-cloak],
   .loading {
@@ -114,7 +153,6 @@ body {
   #container,
   #loader {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     opacity: 1;
@@ -131,28 +169,67 @@ body {
     background-position: center;
     background-size: cover;
     color: #fff;
-    cursor: pointer;
 
-    img {
-      box-shadow: 5px 5px 14px 7px rgba(0, 0, 0, 0.7);
+    button {
+      border: 0;
+      padding: 0;
+      outline: 0;
+      font-size: 140px;
+      background: transparent;
+      color: rgba( 62, 126, 167, 0.8);
+      cursor: pointer;
+      transition: all 250ms ease;
       position: relative;
-      top: 10px;
-      z-index: 1;
-      transition: top 500ms ease;
+
+      &.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      &:first-child {
+        left: 0;
+      }
+
+      &:last-child {
+        right: 0;
+      }
 
       &:hover {
-        top: 0;
+        color: rgb(71, 147, 194);
 
-        & + span {
-          top: 10px;
+        &:first-child {
+          left: -3px;
+        }
+
+        &:last-child {
+          right: -3px;
         }
       }
     }
 
-    span {
-      position: relative;
-      top: -10px;
-      transition: top 500ms ease;
+    div {
+      flex-grow: 1;
+      text-align: center;
+
+      a {
+        background: #000;
+        display: inline-flex;
+        outline: 0;
+
+        &:hover img {
+          opacity: 1;
+        }
+
+        &:active img {
+          opacity: 0.7;
+        }
+
+        img {
+          box-shadow: 5px 5px 14px 7px rgba(0, 0, 0, 0.7);
+          opacity: 0.9;
+          transition: opacity 250ms ease;
+        }
+      }
     }
   }
 
