@@ -5,7 +5,7 @@ ARG API_URL_ARG
 ENV API_URL=$API_URL_ARG
 
 COPY ./ ./
-RUN npm install
+RUN npm ci
 RUN npm run build
 
 
