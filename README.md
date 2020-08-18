@@ -10,8 +10,9 @@ The project runs in tandem with a simple Express.js API, located [here](https://
 
 1. Create a .env file at the root of this project that contains the following values
     - `API_URL=http://location-of-api/`
-2. Run `npm run dev` to develop locally
-3. Run `npm run build` to create dist files for deployment
+2. Run `npm install` to install necessary packages
+3. Run `npm run dev` to develop locally
+4. Run `npm run build` to create dist files for deployment
 
 # Docker Container
 
