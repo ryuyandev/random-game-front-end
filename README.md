@@ -18,5 +18,7 @@ The project runs in tandem with a simple Express.js API, located [here](https://
 To run an instance of this project via docker, run the following command:
 
 ```
-docker run -d --name random-game-front-end --env-file .env ryuyandev/random-game-front-end
+docker run -d --name random-game-front-end  ryuyandev/random-game-front-end
 ```
+
+The docker image is built such that it expects the API to be located at `/random-game-api` on the same host it is running on
