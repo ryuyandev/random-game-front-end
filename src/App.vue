@@ -219,16 +219,18 @@ body {
 
         &:hover img {
           opacity: 1;
+          box-shadow: 7px 7px 14px 7px rgba(0, 0, 0, 0.6);
         }
 
         &:active img {
           opacity: 0.7;
+          box-shadow: 5px 5px 14px 5px rgba(0, 0, 0, 0.7);
         }
 
         img {
           box-shadow: 5px 5px 14px 7px rgba(0, 0, 0, 0.7);
           opacity: 0.9;
-          transition: opacity 250ms ease;
+          transition: all .33s ease;
         }
       }
     }
