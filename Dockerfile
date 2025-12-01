@@ -1,4 +1,4 @@
-FROM node:10-alpine as build-stage
+FROM node:16-alpine as build-stage
 WORKDIR /usr/src/app
 
 ARG API_URL_ARG
