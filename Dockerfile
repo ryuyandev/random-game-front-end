@@ -1,6 +1,8 @@
 FROM node:16-alpine as build-stage
 WORKDIR /usr/src/app
 
+RUN apk add --no-cache python3 make g++
+
 ARG API_URL_ARG
 ENV API_URL=$API_URL_ARG
 
