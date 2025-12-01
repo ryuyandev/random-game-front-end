@@ -17,10 +17,6 @@ export default {
     };
   },
   computed: {
-    bgStyle() {
-      if (this.loading) return {};
-      else return { backgroundImage: `url(${this.gameBackgroundImage})` };
-    },
     noPrevious() {
       return this.game.id == window.localStorage.startingId;
     },

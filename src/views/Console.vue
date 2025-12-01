@@ -74,6 +74,10 @@ export default {
     };
   },
   computed: {
+    bgStyle() {
+      if (this.loading) return { background: '#000' };
+      else return { backgroundImage: `url(${this.gameBackgroundImage})` };
+    },
     gameBackgroundImage() {
       return `${process.env.API_URL}/roms/image-proxy?url=${encodeURIComponent(`https://dl.vimm.net/image.php?type=screen&id=${this.game.id}`)}`;
     },

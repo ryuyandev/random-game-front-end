@@ -51,6 +51,10 @@ export default {
     };
   },
   computed: {
+    bgStyle() {
+      if (this.loading) return {};
+      else return { backgroundImage: `url(${this.gameBackgroundImage})` };
+    },
     gameBackgroundImage() {
       return `https://steamcdn-a.akamaihd.net/steam/apps/${this.game.id}/page_bg_generated.jpg`;
     },
