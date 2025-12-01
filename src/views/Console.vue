@@ -96,7 +96,7 @@ export default {
 
 <style lang="scss" scoped>
 body {
-  background: #000;
+  background: #000 !important;
 
   #container {
     & > button {
@@ -110,7 +110,7 @@ body {
 
       a {
         &:hover img {
-          filter: brightness(105%);
+          filter: brightness(110%);
         }
 
         img {
