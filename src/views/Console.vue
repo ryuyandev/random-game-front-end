@@ -110,12 +110,12 @@ body {
 
       a {
         &:hover img {
-          filter: brightness(110%);
+          filter: brightness(110%) drop-shadow(2px 4px 6px black);
         }
 
         img {
           width: 7rem;
-          filter: brightness(95%);
+          filter: brightness(95%) drop-shadow(2px 4px 6px black);
           transition: all 0.33s ease;
         }
       }
