@@ -74,10 +74,6 @@ export default {
     };
   },
   computed: {
-    bgStyle() {
-      if (this.loading) return { background: '#000' };
-      else return { backgroundImage: `url(${this.gameBackgroundImage})` };
-    },
     gameBackgroundImage() {
       return `${process.env.API_URL}/roms/image-proxy?url=${encodeURIComponent(`https://dl.vimm.net/image.php?type=screen&id=${this.game.id}`)}`;
     },
@@ -87,6 +83,9 @@ export default {
     platformImage() {
       return platformImages[this.game.platform];
     }
+  },
+  mounted() {
+    document.body.style.background = '#000';
   },
   methods: {
     async getGame(list) {
