@@ -108,9 +108,18 @@ body {
       right: 2rem;
       bottom: 1rem;
 
-      img {
-        width: 7rem;
+      a {
+        &:hover img {
+          filter: brightness(105%);
+        }
+
+        img {
+          width: 7rem;
+          filter: brightness(95%);
+          transition: all 0.33s ease;
+        }
       }
+
     }
   }
 }
