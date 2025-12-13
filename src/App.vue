@@ -36,7 +36,7 @@ body {
     background-size: cover;
     color: #fff;
 
-    button {
+    > button {
       border: 0;
       padding: 0;
       outline: 0;

@@ -21,9 +21,16 @@
         style="display: none"
       />
       <div class="game">
-        <a :href="`https://vimm.net/vault/${game.id}`" target="_blank">
-          <img :src="gameImage" :title="game.name" @load="gameImageLoaded" />
-        </a>
+        <div>
+          <button v-if="game.isPlayed" @click="unplayGame"></button>
+          <a
+            @click="gameClick"
+            :href="`https://vimm.net/vault/${game.id}`"
+            target="_blank"
+          >
+            <img :src="gameImage" :title="game.name" @load="gameImageLoaded" />
+          </a>
+        </div>
       </div>
       <div class="platform">
         <router-link :to="`/console/${game.platform}`">
@@ -70,6 +77,7 @@ export default {
         id: null,
         name: null,
         platform: null,
+        isPlayed: false,
       },
     };
   },
@@ -82,47 +90,81 @@ export default {
     },
     platformImage() {
       return platformImages[this.game.platform];
-    }
+    },
+  },
+  watch: {
+    'game.isPlayed'(newVal) {
+      if (!this.game.id)
+        return;
+
+      const playedGameIds = new Set(window.localStorage.getItem('playedGameIds')?.split(',') ?? []);
+      if (newVal)
+        playedGameIds.add(this.game.id);
+      else
+        playedGameIds.delete(this.game.id);
+      
+      window.localStorage.setItem('playedGameIds', [...playedGameIds].join(','));
+    },
   },
   mounted() {
     document.body.style.background = '#000';
   },
   methods: {
     async getGame(list) {
-      return list
-        ? (await axios.get(`${process.env.API_URL}/roms/${list}`)).data
-        : (await axios.get(`${process.env.API_URL}/roms`)).data;
+      let playedGameIds = window.localStorage.getItem('playedGameIds')?.split(',') ?? [];
+      const params = { excludeIds: playedGameIds };
+      const game = list
+        ? (await axios.get(`${process.env.API_URL}/roms/${list}`, { params })).data
+        : (await axios.get(`${process.env.API_URL}/roms`, { params })).data;
+      
+      playedGameIds = new Set(playedGameIds);
+      game.isPlayed = playedGameIds.has(game.id);
+
+      return game;
+    },
+    gameClick() {
+      this.game.isPlayed = true;
+    },
+    unplayGame() {
+      this.game.isPlayed = false;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-body {
-  background: #000 !important;
+#container {
+  & > button {
+    color: #fff !important;
+  }
 
-  #container {
-    & > button {
-      color: #fff !important;
+  div.game > div {
+    width: fit-content;
+    margin: 0 auto;
+    button {
+      width: 100%;
+      height: 1rem;
+      display: block;
+      background: green;
+      border: 0;
     }
+  }
 
-    div.platform {
-      position: absolute;
-      right: 2rem;
-      bottom: 1rem;
+  div.platform {
+    position: absolute;
+    right: 2rem;
+    bottom: 1rem;
 
-      a {
-        &:hover img {
-          filter: brightness(110%) drop-shadow(2px 4px 6px black);
-        }
-
-        img {
-          width: 7rem;
-          filter: brightness(95%) drop-shadow(2px 4px 6px black);
-          transition: all 0.33s ease;
-        }
+    a {
+      &:hover img {
+        filter: brightness(110%) drop-shadow(2px 4px 6px black);
       }
 
+      img {
+        width: 7rem;
+        filter: brightness(95%) drop-shadow(2px 4px 6px black);
+        transition: all 0.33s ease;
+      }
     }
   }
 }
