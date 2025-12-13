@@ -93,17 +93,21 @@ export default {
     },
   },
   watch: {
+    'game.id'(newVal) {
+      const playedGameIds = new Set(JSON.parse(window.localStorage.getItem('playedGameIds') ?? '[]'));
+      this.game.isPlayed = playedGameIds.has(newVal);
+    },
     'game.isPlayed'(newVal) {
       if (!this.game.id)
         return;
 
-      const playedGameIds = new Set(window.localStorage.getItem('playedGameIds')?.split(',') ?? []);
+      const playedGameIds = new Set(JSON.parse(window.localStorage.getItem('playedGameIds') ?? '[]'));
       if (newVal)
         playedGameIds.add(this.game.id);
       else
         playedGameIds.delete(this.game.id);
       
-      window.localStorage.setItem('playedGameIds', [...playedGameIds].join(','));
+      window.localStorage.setItem('playedGameIds', JSON.stringify(playedGameIds));
     },
   },
   mounted() {
@@ -111,7 +115,7 @@ export default {
   },
   methods: {
     async getGame(list) {
-      let playedGameIds = window.localStorage.getItem('playedGameIds')?.split(',') ?? [];
+      let playedGameIds = JSON.parse(window.localStorage.getItem('playedGameIds') ?? '[]');
       const params = { excludeIds: playedGameIds };
       const game = list
         ? (await axios.get(`${process.env.API_URL}/roms/${list}`, { params })).data
